@@ -17,7 +17,7 @@ You can literally copy and paste the following example, change the following att
 * `domain` set to your static website's base domain name (e.g., `xyz.com`)
 
 
-```go
+```hcl
 # AWS Region for S3 and other resources
 provider "aws" {
   region = "us-west-2"
