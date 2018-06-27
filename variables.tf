@@ -20,6 +20,12 @@ variable "allowed_ips" {
   default     = []
 }
 
+variable "web_acl_id" {
+  type        = "string"
+  description = "WAF Web ACL ID to attach to the CloudFront distribution, optional"
+  default     = ""
+}
+
 variable "refer_secret" {
   type        = "string"
   description = "A secret string to authenticate CF requests to S3"

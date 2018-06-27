@@ -85,4 +85,6 @@ resource "aws_cloudfront_distribution" "main" {
     ssl_support_method       = "sni-only"
     minimum_protocol_version = "TLSv1"
   }
+
+  web_acl_id = "${var.web_acl_id}"
 }
