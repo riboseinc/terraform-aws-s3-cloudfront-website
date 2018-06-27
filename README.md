@@ -1,4 +1,4 @@
-# Terraform Module For A S3 Website With CloudFront, TLS
+# Terraform module to setup a S3 Website with CloudFront, ACM
 
 This module helps you create a S3 website, assuming that:
 
@@ -47,7 +47,7 @@ variable "allowed_ips" {
 
 # Using this module
 module "main" {
-  source = "../../public-site"
+  source = "github.com/riboseinc/terraform-aws-s3-cloudfront-website"
 
   fqdn = "${var.fqdn}"
   ssl_certificate_arn = "${aws_acm_certificate_validation.cert.certificate_arn}"
