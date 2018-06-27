@@ -40,6 +40,8 @@ variable "domain" {
   description = "The domain name / ."
   default     = "example.com"
 }
+
+# Allowed IPs that can directly access the S3 bucket
 variable "allowed_ips" {
   type = "list"
   default = [ "999.999.999.999/32" ]
@@ -64,6 +66,9 @@ module "main" {
     "aws.main" = "aws.main"
     "aws.cloudfront" = "aws.cloudfront"
   }
+
+  # Optional WAF Web ACL ID, defaults to none.
+  web_acl_id = "${data.terraform_remote_state.site.waf-web-acl-id}"
 }
 
 # ACM Certificate generation
