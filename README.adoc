@@ -1,4 +1,4 @@
-# Terraform module to setup a S3 Website with CloudFront, ACM
+= Terraform module to setup a S3 Website with CloudFront, ACM
 
 This module helps you create a S3 website, assuming that:
 
@@ -6,9 +6,13 @@ This module helps you create a S3 website, assuming that:
 * its domain is backed by a Route53 zone
 * and of course, your AWS account provides you access to all these resources necessary.
 
-This module is available on the [Terraform Registry](https://registry.terraform.io/modules/riboseinc/s3-cloudfront-website/aws/).
+This module is available on the https://registry.terraform.io/modules/riboseinc/s3-cloudfront-website/aws/[Terraform Registry].
 
-## Sample Usage
+This module is a pair with
+https://github.com/riboseinc/terraform-aws-s3-cloudfront-website[terraform-aws-s3-cloudfront-website],
+which handles redirecting of a DNS hostname to a website, using S3, CloudFront and ACM.
+
+== Sample Usage
 
 You can literally copy and paste the following example, change the following attributes, and you're ready to go:
 
@@ -17,7 +21,8 @@ You can literally copy and paste the following example, change the following att
 * `domain` set to your static website's base domain name (e.g., `xyz.com`)
 
 
-```hcl
+[source,hcl]
+----
 # AWS Region for S3 and other resources
 provider "aws" {
   region = "us-west-2"
@@ -149,4 +154,4 @@ output "route53_fqdn" {
 output "acm_certificate_arn" {
   value = "${aws_acm_certificate_validation.cert.certificate_arn}"
 }
-```
+----
