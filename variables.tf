@@ -50,6 +50,12 @@ variable error_document {
   default     = "404.html"
 }
 
+variable error_response_code {
+  type        = "string"
+  description = "Response code to send on 404"
+  default     = "404"
+}
+
 variable "tags" {
   type        = "map"
   description = "Tags"
