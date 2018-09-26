@@ -8,15 +8,13 @@ resource "aws_cloudfront_distribution" "main" {
   http_version = "http2"
 
   origin {
-
-    domain_name = "${aws_s3_bucket.main.bucket_domain_name}"
-
     origin_id   = "origin-${var.fqdn}"
-
-    # This doesn't work in terraform due to dependency issues:
-    # https://github.com/terraform-providers/terraform-provider-aws/issues/1117
-    # domain_name = "${aws_s3_bucket.main.website_endpoint}"
-    domain_name = "${var.fqdn}.s3-website-${data.aws_region.main.name}.amazonaws.com"
+    
+    domain_name = "${aws_s3_bucket.main.website_endpoint}"
+    
+    # Alternative ways to set the domain, probably no longer necessary
+    # domain_name = "${aws_s3_bucket.main.bucket_domain_name}"
+    # domain_name = "${var.fqdn}.s3-website.${data.aws_region.main.name}.amazonaws.com"
 
     custom_origin_config {
       origin_protocol_policy = "http-only"
