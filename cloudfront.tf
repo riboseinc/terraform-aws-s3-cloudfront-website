@@ -35,7 +35,6 @@ resource "aws_cloudfront_distribution" "main" {
       name  = "User-Agent"
       value = "${var.refer_secret}"
     }
-
   }
 
   enabled = true
@@ -70,6 +69,12 @@ resource "aws_cloudfront_distribution" "main" {
     min_ttl                = 0
     default_ttl            = 300
     max_ttl                = 1200
+
+    lambda_function_association {
+      event_type   = "viewer-request"
+      lambda_arn   = "${module.lambda.qualified_arn}"
+      include_body = true
+    }
   }
 
   restrictions {
