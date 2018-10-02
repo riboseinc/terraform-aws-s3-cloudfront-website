@@ -155,3 +155,20 @@ output "acm_certificate_arn" {
   value = "${aws_acm_certificate_validation.cert.certificate_arn}"
 }
 ----
+
+Need to support a bare domain, e.g. example.com, and a www.example.com? Set `fqdn` to the bare domain and set up a record for the www:
+
+[source,hcl]
+----
+resource "aws_route53_record" "www" {
+  provider = "aws.main"
+  zone_id = "${data.aws_route53_zone.main.zone_id}"
+  name = "www.${var.fqdn}"
+  type = "CNAME"
+  records = ["${var.fqdn}"]
+  ttl = 300
+}
+
+# add this inside module "main" under fqdn:
+aliases             = "www.${var.fqdn}"
+----
