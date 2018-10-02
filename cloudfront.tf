@@ -9,9 +9,9 @@ resource "aws_cloudfront_distribution" "main" {
 
   origin {
     origin_id   = "origin-${var.fqdn}"
-    
+
     domain_name = "${aws_s3_bucket.main.website_endpoint}"
-    
+
     # Alternative ways to set the domain, probably no longer necessary
     # domain_name = "${aws_s3_bucket.main.bucket_domain_name}"
     # domain_name = "${var.fqdn}.s3-website.${data.aws_region.main.name}.amazonaws.com"
@@ -48,7 +48,7 @@ resource "aws_cloudfront_distribution" "main" {
     response_page_path    = "/${var.error_document}"
   }
 
-  aliases = ["${var.fqdn}"]
+  aliases = "${concat(list("${var.fqdn}"), "${var.aliases}")}"
 
   price_class = "PriceClass_100"
 
