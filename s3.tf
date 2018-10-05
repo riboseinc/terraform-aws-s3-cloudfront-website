@@ -22,7 +22,7 @@ data "aws_iam_policy_document" "bucket_policy" {
     sid = "AllowedIPReadAccess"
 
     actions = [
-      "s3:GetObject"
+      "s3:GetObject",
     ]
 
     resources = [
@@ -34,22 +34,21 @@ data "aws_iam_policy_document" "bucket_policy" {
       variable = "aws:SourceIp"
 
       values = [
-        "${var.allowed_ips}"
+        "${var.allowed_ips}",
       ]
     }
 
     principals {
-      type = "*"
+      type        = "*"
       identifiers = ["*"]
     }
-
   }
 
   statement {
     sid = "AllowCFOriginAccess"
 
     actions = [
-      "s3:GetObject"
+      "s3:GetObject",
     ]
 
     resources = [
@@ -61,15 +60,13 @@ data "aws_iam_policy_document" "bucket_policy" {
       variable = "aws:UserAgent"
 
       values = [
-        "${var.refer_secret}"
+        "${var.refer_secret}",
       ]
     }
 
     principals {
-      type = "*"
+      type        = "*"
       identifiers = ["*"]
     }
-
   }
-
 }
