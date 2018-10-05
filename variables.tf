@@ -35,7 +35,7 @@ variable "web_acl_id" {
 variable "refer_secret" {
   type        = "string"
   description = "A secret string to authenticate CF requests to S3"
-  default    = "123-VERY-SECRET-123"
+  default     = "123-VERY-SECRET-123"
 }
 
 variable routing_rules {
