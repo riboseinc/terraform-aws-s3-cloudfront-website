@@ -72,8 +72,7 @@ resource "aws_cloudfront_distribution" "main" {
 
     lambda_function_association {
       event_type   = "viewer-request"
-      lambda_arn   = "${module.lambda.qualified_arn}"
-      include_body = true
+      lambda_arn   = "${module.lambda.arn}:${module.lambda.version}"
     }
   }
 

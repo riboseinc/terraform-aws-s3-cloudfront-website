@@ -5,6 +5,14 @@ locals {
 resource "template_dir" "this" {
   source_dir      = "${path.module}/src"
   destination_dir = "${path.module}/.archive"
+
+  vars {
+    BUCKET_NAME = "${var.bucket_name}"
+    BUCKET_KEY  = "${var.bucket_key}"
+
+    BASIC_USER  = "${var.basic_user}"
+    BASIC_PWD   = "${var.basic_password}"
+  }
 }
 
 data "archive_file" "this" {
@@ -25,14 +33,19 @@ resource "aws_lambda_function" "this" {
   source_code_hash = "${data.archive_file.this.output_base64sha256}"
 
   function_name    = "${local.name}"
-  handler          = "handler"
+  handler          = "basic_auth.handler"
 
-  timeout          = "300" # ~5mins
+  timeout          = "3"
+  memory_size      = 128
+  publish          = true
 
-  lifecycle {
-    ignore_changes = [
-      "last_modified",
-      "source_code_hash"
-    ]
-  }
+  //  environment {
+  //    variables = {
+  //      BUCKET_NAME = "${var.bucket_name}"
+  //      BUCKET_KEY = "${var.bucket_key}"
+  //
+  //      BASIC_USER = "${var.basic_user}"
+  //      BASIC_PWD = "${var.basic_password}"
+  //    }
+  //  }
 }

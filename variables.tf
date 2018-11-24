@@ -61,3 +61,24 @@ variable "tags" {
   description = "Tags"
   default     = {}
 }
+
+/* used basic-auth lambda */
+variable "bucket_name" {
+  type = "string"
+  default = ""
+}
+
+variable "bucket_key" {
+  type = "string"
+  default = ""
+}
+
+variable "basic_user" {
+  type = "string"
+  default = ""
+}
+
+variable "basic_password" {
+  type = "string"
+  default = ""
+}

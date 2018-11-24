@@ -7,7 +7,10 @@ data "aws_iam_policy_document" "sts" {
 
     principals {
       type        = "Service"
-      identifiers = ["lambda.amazonaws.com"]
+      identifiers = [
+        "lambda.amazonaws.com",
+        "edgelambda.amazonaws.com"
+      ]
     }
   }
 }
@@ -16,15 +19,34 @@ data "aws_iam_policy_document" "this" {
   statement {
     effect    = "Allow",
     actions = [
+      "s3:GetBucketLocation",
+      "s3:ListBucket",
+      "s3:GetObject",
+
       "logs:CreateLogGroup",
       "logs:CreateLogStream",
-      "logs:PutLogEvents"
+      "logs:DescribeLogGroups",
+      "logs:DescribeLogStreams",
+      "logs:PutLogEvents",
+      "logs:GetLogEvents",
+      "logs:FilterLogEvents"
     ]
     resources = [
-      "arn:aws:logs:*:*:*"
+      "*"
+    ]
+  }
+
+  statement {
+    effect    = "Allow",
+    actions = [
+      "lambda:GetFunction"
+    ]
+    resources = [
+      "*"
     ]
   }
 }
+
 
 resource "aws_iam_role_policy" "this" {
   name = "${local.name}"
