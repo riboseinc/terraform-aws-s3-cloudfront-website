@@ -20,16 +20,21 @@ exports.handler = async (event, context, callback) => {
             return callback(null, request);
         }
 
-        const files = JSON.parse(await readRestrictedFiles());
+        const rawFiles = JSON.parse(await readRestrictedFiles());
+        if (!Array.isArray(rawFiles)) {
+            console.log('${BUCKET_KEY} is not any array => ignore');
+            return callback(null, request);
+        }
+        const files = rawFiles.map(f => f.startsWith('/') ? f : '/' + f);
         if (!files.includes(uri)) {
-            console.log(`uri= ${uri} not protected`);
+            console.log(uri + ` not protected`);
             return callback(null, request);
         }
 
         const headers = request.headers;
 
         const authUser = '${BASIC_USER}';
-        const authPass = '${BASIC_PASSWORD}';
+        const authPass = '${BASIC_PWD}';
 
         const authString = 'Basic ' + new Buffer(authUser + ':' + authPass).toString('base64');
         if (typeof headers.authorization === 'undefined' || headers.authorization[0].value !== authString) {
