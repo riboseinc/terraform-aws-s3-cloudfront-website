@@ -3,6 +3,12 @@ variable "fqdn" {
   description = "The FQDN of the website and also name of the S3 bucket"
 }
 
+variable "aliases" {
+  type        = "list"
+  description = "Any other domain aliases to add to the CloudFront distribution"
+  default     = []
+}
+
 variable "force_destroy" {
   type        = "string"
   description = "The force_destroy argument of the S3 bucket"
@@ -29,7 +35,7 @@ variable "web_acl_id" {
 variable "refer_secret" {
   type        = "string"
   description = "A secret string to authenticate CF requests to S3"
-  default    = "123-VERY-SECRET-123"
+  default     = "123-VERY-SECRET-123"
 }
 
 variable routing_rules {
