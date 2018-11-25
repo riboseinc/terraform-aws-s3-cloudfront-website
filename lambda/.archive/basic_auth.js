@@ -20,7 +20,12 @@ exports.handler = async (event, context, callback) => {
             return callback(null, request);
         }
 
-        const files = JSON.parse(await readRestrictedFiles());
+        const rawFiles = JSON.parse(await readRestrictedFiles());
+        if (!Array.isArray(rawFiles)) {
+            console.log('htaccess.json is not any array => ignore');
+            return callback(null, request);
+        }
+        const files = rawFiles.map(f => f.startsWith('/') ? f : '/' + f);
         if (!files.includes(uri)) {
             console.log(uri + ` not protected`);
             return callback(null, request);

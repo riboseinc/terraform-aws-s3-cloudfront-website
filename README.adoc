@@ -74,6 +74,17 @@ module "main" {
 
   # Optional WAF Web ACL ID, defaults to none.
   web_acl_id = "${data.terraform_remote_state.site.waf-web-acl-id}"
+
+  # Basic HTTP authentication resources defined in Bucket Object "phuonghqh.booppi.website.htaccess/htaccess.json"
+  # sample "htaccess.json":
+  #   [
+  #     "/sample.png",
+  #     "/private/admin.png"
+  #   ]
+  bucket_name = "phuonghqh.booppi.website.htaccess"
+  bucket_key = "htaccess.json"
+  basic_user = "test"
+  basic_password = "test"
 }
 
 # ACM Certificate generation
