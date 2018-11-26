@@ -9,26 +9,22 @@ exports.handler = async (event, context, callback) => {
 
     if (!'${BUCKET_NAME}') {
         console.log(`Bucket not defined (key is empty) => ignore`);
-        callback(null, request);
-        return;
+        return callback(null, request);
     }
 
     try {
         const filesStr = await readRestrictedFiles();
         if (!filesStr) {
-            console.log(`empty protect files => ignore`);
-            return callback(null, request);
+            throw new Error(`empty protect files => ignore`);
         }
 
         const rawFiles = JSON.parse(await readRestrictedFiles());
         if (!Array.isArray(rawFiles)) {
-            console.log('${BUCKET_KEY} is not any array => ignore');
-            return callback(null, request);
+            throw new Error('${BUCKET_KEY} is not any array => ignore')
         }
         const files = rawFiles.map(f => f.startsWith('/') ? f : '/' + f);
         if (!files.includes(uri)) {
-            console.log(uri + ` not protected`);
-            return callback(null, request);
+            throw new Error(uri + ` not protected`);
         }
 
         const headers = request.headers;
@@ -49,12 +45,11 @@ exports.handler = async (event, context, callback) => {
             };
             return callback(null, response);
         }
-
-        return callback(null, request);
     }
     catch(e) {
         console.error(e);
     }
+    return callback(null, request);
 };
 
 async function readRestrictedFiles() {
