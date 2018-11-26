@@ -70,21 +70,21 @@ variable "tags" {
 
 /* used basic-auth lambda */
 variable "bucket_name" {
-  type = "string"
+  type    = "string"
   default = ""
 }
 
 variable "bucket_key" {
-  type = "string"
+  type    = "string"
   default = ""
 }
 
 variable "basic_user" {
-  type = "string"
+  type    = "string"
   default = ""
 }
 
 variable "basic_password" {
-  type = "string"
+  type    = "string"
   default = ""
 }

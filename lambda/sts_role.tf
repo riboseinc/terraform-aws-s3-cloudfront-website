@@ -1,15 +1,17 @@
 data "aws_iam_policy_document" "sts" {
   statement {
-    effect  = "Allow",
+    effect = "Allow"
+
     actions = [
-      "sts:AssumeRole"
+      "sts:AssumeRole",
     ]
 
     principals {
-      type        = "Service"
+      type = "Service"
+
       identifiers = [
         "lambda.amazonaws.com",
-        "edgelambda.amazonaws.com"
+        "edgelambda.amazonaws.com",
       ]
     }
   }
@@ -17,45 +19,46 @@ data "aws_iam_policy_document" "sts" {
 
 data "aws_iam_policy_document" "this" {
   statement {
-    effect    = "Allow",
+    effect = "Allow"
+
     actions = [
       "s3:GetBucketLocation",
       "s3:ListBucket",
       "s3:GetObject",
-
       "logs:CreateLogGroup",
       "logs:CreateLogStream",
       "logs:DescribeLogGroups",
       "logs:DescribeLogStreams",
       "logs:PutLogEvents",
       "logs:GetLogEvents",
-      "logs:FilterLogEvents"
+      "logs:FilterLogEvents",
     ]
+
     resources = [
-      "*"
+      "*",
     ]
   }
 
   statement {
-    effect    = "Allow",
+    effect = "Allow"
+
     actions = [
-      "lambda:GetFunction"
+      "lambda:GetFunction",
     ]
+
     resources = [
-      "*"
+      "*",
     ]
   }
 }
 
-
 resource "aws_iam_role_policy" "this" {
-  name = "${local.name}"
-  role        = "${aws_iam_role.this.id}"
-  policy      = "${data.aws_iam_policy_document.this.json}"
+  name   = "${local.name}"
+  role   = "${aws_iam_role.this.id}"
+  policy = "${data.aws_iam_policy_document.this.json}"
 }
 
 resource "aws_iam_role" "this" {
-  name = "${local.name}"
+  name               = "${local.name}"
   assume_role_policy = "${data.aws_iam_policy_document.sts.json}"
 }
-

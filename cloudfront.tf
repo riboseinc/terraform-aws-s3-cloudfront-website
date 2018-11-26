@@ -70,8 +70,8 @@ resource "aws_cloudfront_distribution" "main" {
     max_ttl                = 1200
 
     lambda_function_association {
-      event_type   = "viewer-request"
-      lambda_arn   = "${module.lambda.arn}:${module.lambda.version}"
+      event_type = "viewer-request"
+      lambda_arn = "${module.lambda.arn}:${module.lambda.version}"
     }
   }
 
