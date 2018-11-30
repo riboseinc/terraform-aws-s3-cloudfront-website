@@ -68,23 +68,13 @@ variable "tags" {
   default     = {}
 }
 
-/* used basic-auth lambda */
-variable "bucket_name" {
-  type    = "string"
+variable "lambda_edge_event_type" {
+  type = "string"
   default = ""
 }
 
-variable "bucket_key" {
-  type    = "string"
-  default = ""
-}
-
-variable "basic_user" {
-  type    = "string"
-  default = ""
-}
-
-variable "basic_password" {
-  type    = "string"
+# value should be  "${lambda.arn}:${lambda.version}"
+variable "lambda_edge_arn_version" {
+  type = "string"
   default = ""
 }
