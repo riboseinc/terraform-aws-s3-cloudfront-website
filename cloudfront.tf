@@ -3,7 +3,7 @@
 #   => we need to duplicate "aws_cloudfront_distribution" to support "lambda@edge" feature
 
 resource "aws_cloudfront_distribution" "main" {
-  count = "${length(var.lambda_edge_arn_version) == 0 ? 1 : 0}"
+  count = "${var.lambda_edge_enabled ? 0 : 1}"
 
   provider     = "aws.cloudfront"
   http_version = "http2"
@@ -87,7 +87,7 @@ resource "aws_cloudfront_distribution" "main" {
 }
 
 resource "aws_cloudfront_distribution" "main-lambda-edge" {
-  count = "${length(var.lambda_edge_arn_version) > 0 ? 1 : 0}"
+  count = "${var.lambda_edge_enabled ? 1 : 0}"
 
   provider     = "aws.cloudfront"
   http_version = "http2"

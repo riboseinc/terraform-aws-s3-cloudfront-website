@@ -68,13 +68,16 @@ variable "tags" {
   default     = {}
 }
 
+//https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-cloudfront-trigger-events.html?shortFooter=true
 variable "lambda_edge_event_type" {
-  type = "string"
   default = ""
 }
 
 # value should be  "${lambda.arn}:${lambda.version}"
 variable "lambda_edge_arn_version" {
-  type = "string"
   default = ""
+}
+
+variable "lambda_edge_enabled" {
+  default = "false"
 }
