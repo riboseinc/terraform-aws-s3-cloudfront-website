@@ -155,7 +155,12 @@ resource "aws_cloudfront_distribution" "main-lambda-edge" {
     max_ttl                = 1200
 
     lambda_function_association {
-      event_type = "${var.lambda_edge_event_type}"
+      event_type = "viewer-request"
+      lambda_arn = "${var.lambda_edge_arn_version}"
+    }
+
+    lambda_function_association {
+      event_type = "viewer-response"
       lambda_arn = "${var.lambda_edge_arn_version}"
     }
   }
