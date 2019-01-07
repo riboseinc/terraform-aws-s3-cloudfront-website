@@ -67,3 +67,12 @@ variable "tags" {
   description = "Tags"
   default     = {}
 }
+
+# value should be  "${lambda.arn}:${lambda.version}"
+variable "lambda_edge_arn_version" {
+  default = ""
+}
+
+variable "lambda_edge_enabled" {
+  default = "false"
+}
