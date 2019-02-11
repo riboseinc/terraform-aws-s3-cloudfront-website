@@ -75,17 +75,22 @@ module "main" {
   # Optional WAF Web ACL ID, defaults to none.
   web_acl_id = "${data.terraform_remote_state.site.waf-web-acl-id}"
 
-  # Basic HTTP authentication resources defined in Bucket Object "phuonghqh.booppi.website.htaccess/htaccess.json"
-  # sample "htaccess.json":
-  #   [
-  #     "/sample.png",
-  #     "/private/admin.png"
-  #   ]
-  bucket_name = "phuonghqh.booppi.website.htaccess"
-  bucket_key = "htaccess.json"
-  basic_user = "test"
-  basic_password = "test"
+
+  ### only used with module "lambda" bellow ###
+  lambda_edge_enabled = "true"
+  lambda_edge_arn_version = "${module.lambda.arn}:${module.lambda.version}"
 }
+
+### integrate with module terraform-aws-s3-cloudfront-website to support basic-auth
+module "lambda" {
+  source = "https://github.com/riboseinc/terraform-aws-lambda-edge-authentication"
+
+  # to define blacklist/whitelist, see https://github.com/riboseinc/terraform-aws-lambda-edge-authentication/blob/master/README.adoc
+  bucketName = "mysite.example.com.htaccess"
+  bucketKey = "config.json"
+  cookieDomain = "example.com"
+}
+
 
 # ACM Certificate generation
 
