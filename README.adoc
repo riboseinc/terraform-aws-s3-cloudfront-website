@@ -267,3 +267,48 @@ resource "aws_acm_certificate_validation" "cert-root" {
   validation_record_fqdns = ["${aws_route53_record.cert_validation-root.fqdn}"]
 }
 ----
+
+
+== Supporting path redirects
+
+The `routing_rules` variable allows setting path redirection rules
+according to
+https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-websiteconfiguration-routingrules.html[AWS S3 Routing Rules].
+
+This variable only accepts JSON input, as described in the
+https://www.terraform.io/docs/providers/aws/r/s3_bucket.html[Terraform aws_s3_bucket page].
+
+In the following example, the S3 website will redirect paths
+matching prefix `myprefix/` to `https://www.example.com` with
+the HTTP status code `302`.
+
+[source,hcl]
+----
+module "site-root" {
+  source = "github.com/riboseinc/terraform-aws-s3-cloudfront-redirect"
+
+  fqdn                = "${var.fqdn-root}"
+  ssl_certificate_arn = "${aws_acm_certificate_validation.cert-root.certificate_arn}"
+
+  refer_secret = "${base64sha512("SUPER-REFER-SECRET${var.fqdn-root}*AGAIN")}"
+
+  force_destroy = "true"
+
+  routing_rules = <<EOF [{
+    "Condition": {
+      "KeyPrefixEquals": "myprefix/"
+    },
+    "Redirect": {
+      "HostName": "www.example.com",
+      "HttpRedirectCode": "302",
+      "Protocol": "https"
+    }
+  }]
+  EOF
+
+  providers {
+    "aws.main"       = "aws.main"
+    "aws.cloudfront" = "aws.cloudfront"
+  }
+}
+----
