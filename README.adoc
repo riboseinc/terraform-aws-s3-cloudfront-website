@@ -143,6 +143,10 @@ output "s3_bucket_id" {
   value = "${module.main.s3_bucket_id}"
 }
 
+output "s3_bucket_arn" {
+  value = "${module.main.s3_bucket_arn}"
+}
+
 output "s3_domain" {
   value = "${module.main.s3_website_endpoint}"
 }
