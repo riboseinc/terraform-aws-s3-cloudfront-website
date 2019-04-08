@@ -9,7 +9,7 @@ This module helps you create a S3 website, assuming that:
 This module is available on the https://registry.terraform.io/modules/riboseinc/s3-cloudfront-website/aws/[Terraform Registry].
 
 This module is a pair with
-https://github.com/riboseinc/terraform-aws-s3-cloudfront-website[terraform-aws-s3-cloudfront-website],
+https://github.com/riboseinc/terraform-aws-s3-cloudfront-redirect[terraform-aws-s3-cloudfront-redirect],
 which handles redirecting of a DNS hostname to a website, using S3, CloudFront and ACM.
 
 == Sample Usage
