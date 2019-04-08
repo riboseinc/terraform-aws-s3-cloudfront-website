@@ -42,7 +42,7 @@ variable "fqdn" {
 }
 
 variable "domain" {
-  description = "The domain name / ."
+  description = "The domain name."
   default     = "example.com"
 }
 
@@ -74,21 +74,6 @@ module "main" {
 
   # Optional WAF Web ACL ID, defaults to none.
   web_acl_id = "${data.terraform_remote_state.site.waf-web-acl-id}"
-
-
-  ### only used with module "lambda" bellow ###
-  lambda_edge_enabled = "true"
-  lambda_edge_arn_version = "${module.lambda.arn}:${module.lambda.version}"
-}
-
-### integrate with module terraform-aws-s3-cloudfront-website to support basic-auth
-module "lambda" {
-  source = "https://github.com/riboseinc/terraform-aws-lambda-edge-authentication"
-
-  # to define blacklist/whitelist, see https://github.com/riboseinc/terraform-aws-lambda-edge-authentication/blob/master/README.adoc
-  bucketName = "mysite.example.com.htaccess"
-  bucketKey = "config.json"
-  cookieDomain = "example.com"
 }
 
 
@@ -312,3 +297,163 @@ module "site-root" {
   }
 }
 ----
+
+
+== Supporting HTTP authentication
+
+This module supports configuration for HTTP authentication using the sister module
+https://github.com/riboseinc/terraform-aws-lambda-edge-authentication[terraform-aws-lambda-edge-authentication].
+
+NOTE: This authentication method utilizes AWS Lambda -- a paid resource.
+Keep this in mind when adopting this solution.
+
+This module works through applying an AWS Lambda HTTP authentication function
+to the CloudFront@Edge distribution of the static website.
+
+Specifically, this Lambda function is executed on every access to the site to check whether:
+
+. the path being access should be protected
+. if so, authenticate the client:
+.. if the client was previously authentication (and therefore carries a cookie), allow
+.. with an HTTP authentication, if it matches the configuration, allow
+. if the client is allowed, place (or update) the cookie to allow for further access.
+
+This is an example of how to use HTTP authentication with this module.
+
+Assume you want to create a user called `foobar` with a password `FooBar#PassW0RD`.
+
+Run `htaccess` to generate access credentials to upload:
+
+[source,sh]
+----
+$ htpasswd -nbB foobar FooBar#PassW0RD
+foobar:$2y$05$1h9cwwFusLcZCIUpdM7Gke.ei1E2QV6ORH/ZmvbR4h2tDGHb7q8lW
+----
+
+NOTE: This command uses `bcrypt` to store the password hash. While it is
+the best choice out of available `htpasswd` algorithms (MD5, SHA1, crypt),
+remember that by default there is no rate limiting on the Lambda function
+-- meaning that someone can brute force the passwords via the public interface.
+(You could use the `reserved_concurrent_executions` option to limit
+Lambda concurrency.)
+
+Create a configuration JSON file that specifies the paths to protect and
+access credentials:
+
+[source,js]
+----
+{
+  /* store usernames and password in "htpasswd" format */
+  "htpasswd": "foobar:$apr1$MlPn1Wl/$Tx5TGdU4YBfLQ5rudfu1j1",
+
+  /* path patterns to protect in micromatch syntax */
+  "uriPatterns": [
+
+    /* all files that end with `.png` or `.sh` in the first level */
+    "/*.{png,sh}",
+
+    /* all files regardless of depth */
+    "**"
+  ]
+}
+----
+
+NOTE: See
+https://github.com/riboseinc/terraform-aws-lambda-edge-authentication[terraform-aws-lambda-edge-authentication]
+on how to create blacklists and whitelists for path patterns.
+
+
+
+Create an S3 bucket and upload the configuration JSON file:
+
+[source,hcl]
+----
+provider "aws" {
+  region = "us-east-1"
+  #description = "AWS Region for Cloudfront (ACM certs only supports us-east-1)"
+  alias = "cloudfront"
+}
+
+resource "aws_s3_bucket_object" "permissions" {
+  bucket = "${aws_s3_bucket.permissions.bucket}"
+  key    = "site-permissions.json"
+  source = "./site-permissions.json"
+  etag = "${filemd5("./site-permissions.json")}"
+  provider = "aws.cloudfront"
+}
+
+resource "aws_s3_bucket" "permissions" {
+  bucket = "my-site-permissions"
+  acl    = "private"
+  provider = "aws.cloudfront"
+}
+----
+
+NOTE: Be aware that this S3 bucket (and the CloudFront@Edge Lambda function)
+must be in the same region as CloudFront distribution. +
+If you use AWS Certificate Manager (ACM) with CloudFront --
+you must have BOTH the ACM certificate and the CloudFront distribution
+created in the `us-east-1` region.
+(https://docs.aws.amazon.com/acm/latest/userguide/acm-regions.html)
+The same goes for the Lambda function and its configuration JSON file.
+
+
+Create the authentication Lambda function. Remember that it must
+use the same provider (same region) as the S3 bucket did.
+
+[source,hcl]
+----
+module "staging-lambda" {
+  source = "github.com/riboseinc/terraform-aws-lambda-edge-authentication"
+  bucketName = "${aws_s3_bucket.permissions.bucket}"
+  bucketKey = "${aws_s3_bucket_object.permissions.key}"
+  cookieDomain = "${var.fqdn-staging}"
+
+  providers {
+    "aws" = "aws.cloudfront"
+  }
+}
+----
+
+
+At last add the Lambda function to the site module:
+
+
+[source,hcl]
+----
+module "site-root" {
+  source = "github.com/riboseinc/terraform-aws-s3-cloudfront-redirect"
+
+  fqdn                = "${var.fqdn-root}"
+  ssl_certificate_arn = "${aws_acm_certificate_validation.cert-root.certificate_arn}"
+
+  refer_secret = "${base64sha512("SUPER-REFER-SECRET${var.fqdn-root}*AGAIN")}"
+
+  force_destroy = "true"
+
+  lambda_edge_enabled = "true"
+  lambda_edge_arn_version = "${module.staging-lambda.arn}:${module.staging-lambda.version}"
+
+  providers {
+    "aws.main"       = "aws.main"
+    "aws.cloudfront" = "aws.cloudfront"
+  }
+
+}
+----
+
+
+Now run `terraform apply` and see everything being setup.
+
+
+To confirm this works:
+
+. Visit a protected path in the browser and confirm that HTTP authentication
+  is required. (You'll be prompted to log in.)
+
+. Visit a protected path again in a browser, but this time with caches disabled.
+  Check whether a cookie has been set in your request -- it should have been
+  set in the previous successful authentication. It's working properly if you
+  see it.
+
+How awesome is this!
