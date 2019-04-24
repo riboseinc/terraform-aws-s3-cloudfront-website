@@ -49,7 +49,11 @@ variable "domain" {
 # Allowed IPs that can directly access the S3 bucket
 variable "allowed_ips" {
   type = "list"
-  default = [ "999.999.999.999/32" ]
+  default = [
+    "0.0.0.0/0"            # public access
+    # "xxx.xxx.xxx.xxx/mm" # restricted
+    # "999.999.999.999/32" # invalid IP, completely inaccessible
+  ]
 }
 
 # Using this module
