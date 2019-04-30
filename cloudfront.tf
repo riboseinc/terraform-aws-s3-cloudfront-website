@@ -21,9 +21,8 @@ resource "aws_cloudfront_distribution" "main" {
       # doesn't support HTTPS connections for website endpoints."
       origin_protocol_policy = "http-only"
 
-      # These are already set by default.
-      # http_port = "80"
-      # https_port = "443"
+      http_port = "80"
+      https_port = "443"
 
       # TODO: given the origin_protocol_policy set to `http-only`,
       # not sure what this does...
