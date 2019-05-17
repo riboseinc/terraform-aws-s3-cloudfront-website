@@ -44,6 +44,12 @@ variable routing_rules {
   default     = ""
 }
 
+variable cloudfront_price_class {
+  type        = "string"
+  description = "PriceClass for CloudFront distribution"
+  default     = "PriceClass_100"
+}
+
 variable index_document {
   type        = "string"
   description = "HTML to show at root"
