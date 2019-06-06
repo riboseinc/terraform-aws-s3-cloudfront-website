@@ -286,7 +286,8 @@ module "site-root" {
 
   force_destroy = "true"
 
-  routing_rules = <<EOF [{
+  routing_rules = <<EOF 
+  [{
     "Condition": {
       "KeyPrefixEquals": "myprefix/"
     },
@@ -296,7 +297,7 @@ module "site-root" {
       "Protocol": "https"
     }
   }]
-  EOF
+EOF
 
   providers {
     "aws.main"       = "aws.main"
