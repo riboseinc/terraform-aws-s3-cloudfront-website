@@ -2,3 +2,5 @@
 *.sw?
 .archive.zip
 .archive/
+.idea
+*.iml

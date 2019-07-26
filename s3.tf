@@ -1,22 +1,27 @@
 resource "aws_s3_bucket" "main" {
-  provider = "aws.main"
-  bucket   = "${var.fqdn}"
+  provider = aws.main
+  bucket   = var.fqdn
   acl      = "private"
-  policy   = "${data.aws_iam_policy_document.bucket_policy.json}"
+  policy   = data.aws_iam_policy_document.bucket_policy.json
 
   website {
-    index_document = "${var.index_document}"
-    error_document = "${var.error_document}"
-    routing_rules  = "${var.routing_rules}"
+    index_document = var.index_document
+    error_document = var.error_document
+    routing_rules  = var.routing_rules
   }
 
-  force_destroy = "${var.force_destroy}"
+  force_destroy = var.force_destroy
 
-  tags = "${merge("${var.tags}",map("Name", "${var.fqdn}"))}"
+  tags = merge(
+    var.tags,
+    {
+      "Name" = var.fqdn
+    },
+  )
 }
 
 data "aws_iam_policy_document" "bucket_policy" {
-  provider = "aws.main"
+  provider = aws.main
 
   statement {
     sid = "AllowedIPReadAccess"
@@ -33,9 +38,7 @@ data "aws_iam_policy_document" "bucket_policy" {
       test     = "IpAddress"
       variable = "aws:SourceIp"
 
-      values = [
-        "${var.allowed_ips}",
-      ]
+      values = var.allowed_ips
     }
 
     principals {
@@ -60,7 +63,7 @@ data "aws_iam_policy_document" "bucket_policy" {
       variable = "aws:UserAgent"
 
       values = [
-        "${var.refer_secret}",
+        var.refer_secret,
       ]
     }
 
@@ -70,3 +73,4 @@ data "aws_iam_policy_document" "bucket_policy" {
     }
   }
 }
+
