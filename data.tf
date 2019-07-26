@@ -1,3 +1,4 @@
 data "aws_region" "main" {
-  provider = "aws.main"
+  provider = aws.main
 }
+
