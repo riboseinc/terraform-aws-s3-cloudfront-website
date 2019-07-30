@@ -18,32 +18,23 @@ output "s3_hosted_zone_id" {
 }
 
 output "cf_domain_name" {
-  value = element(
-    concat(
+  value = concat(
       aws_cloudfront_distribution.main-lambda-edge.*.domain_name,
       aws_cloudfront_distribution.main.*.domain_name,
-    ),
-    0,
-  )
+    )[0]
 }
 
 output "cf_hosted_zone_id" {
-  value = element(
-    concat(
+  value = concat(
       aws_cloudfront_distribution.main-lambda-edge.*.hosted_zone_id,
       aws_cloudfront_distribution.main.*.hosted_zone_id,
-    ),
-    0,
-  )
+    )[0]
 }
 
 output "cf_distribution_id" {
-  value = element(
-    concat(
+  value = concat(
       aws_cloudfront_distribution.main-lambda-edge.*.id,
       aws_cloudfront_distribution.main.*.id,
-    ),
-    0,
-  )
+    )[0]
 }
 
