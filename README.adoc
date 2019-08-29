@@ -17,8 +17,10 @@ which handles redirecting of a DNS hostname to a website, using S3, CloudFront a
 You can literally copy and paste the following example, change the following attributes, and you're ready to go:
 
 * `allowed_ips`: set it to "`0.0.0.0/0`" if it should be publicly accessible
-* `fqdn` set to your static website's hostname
-* `domain` set to your static website's base domain name (e.g., `xyz.com`)
+* `fqdn`: set to your static website's hostname
+* `domain`: set to your static website's base domain name (e.g., `xyz.com`)
+* `cf_ipv6_enabled`: default is `true`,
+enable https://aws.amazon.com/about-aws/whats-new/2016/10/ipv6-support-for-cloudfront-waf-and-s3-transfer-acceleration/[CloudFront IPV6] feature.
 
 
 [source,hcl]
@@ -286,7 +288,7 @@ module "site-root" {
 
   force_destroy = "true"
 
-  routing_rules = <<EOF 
+  routing_rules = <<EOF
   [{
     "Condition": {
       "KeyPrefixEquals": "myprefix/"

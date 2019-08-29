@@ -5,7 +5,7 @@
 resource "aws_cloudfront_distribution" "main" {
   count = var.lambda_edge_enabled ? 0 : 1
 
-  is_ipv6_enabled = true
+  is_ipv6_enabled = var.cf_ipv6_enabled
 
   provider     = aws.cloudfront
   http_version = "http2"
@@ -101,7 +101,7 @@ resource "aws_cloudfront_distribution" "main" {
 resource "aws_cloudfront_distribution" "main-lambda-edge" {
   count = var.lambda_edge_enabled ? 1 : 0
 
-  is_ipv6_enabled = true
+  is_ipv6_enabled = var.cf_ipv6_enabled
 
   provider     = aws.cloudfront
   http_version = "http2"
