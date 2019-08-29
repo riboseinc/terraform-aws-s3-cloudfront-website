@@ -77,9 +77,15 @@ variable "tags" {
 # value should be  "${lambda.arn}:${lambda.version}"
 variable "lambda_edge_arn_version" {
   default = ""
+  type = string
 }
 
 variable "lambda_edge_enabled" {
-  default = "false"
+  default = false
+  type = bool
 }
 
+variable "cf_ipv6_enabled" {
+  default = true
+  type = bool
+}
