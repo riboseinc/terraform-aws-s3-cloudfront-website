@@ -467,3 +467,18 @@ To confirm this works:
   see it.
 
 How awesome is this!
+
+
+== Upgrading to Terraform 0.12
+
+This module now supports Terraform 0.12.
+
+To upgrade to Terraform 0.12 using this module, do this:
+
+[source,bash]
+----
+terraform init -upgrade
+terraform 0.12upgrade
+terraform plan
+terraform apply -auto-approve
+----
