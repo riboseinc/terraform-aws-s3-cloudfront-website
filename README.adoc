@@ -76,9 +76,9 @@ module "main" {
   # Optional override for PriceClass, defaults to PriceClass_100
   cloudfront_price_class = "PriceClass_200"
 
-  providers {
-    "aws.main" = "aws.main"
-    "aws.cloudfront" = "aws.cloudfront"
+  providers = {
+    aws.main = aws.main
+    aws.cloudfront = aws.cloudfront
   }
 
   # Optional WAF Web ACL ID, defaults to none.
@@ -221,9 +221,9 @@ module "site-root" {
 
   force_destroy = "true"
 
-  providers {
-    "aws.main"       = "aws.main"
-    "aws.cloudfront" = "aws.cloudfront"
+  providers = {
+    aws.main       = aws.main
+    aws.cloudfront = aws.cloudfront
   }
 }
 
@@ -301,9 +301,9 @@ module "site-root" {
   }]
 EOF
 
-  providers {
-    "aws.main"       = "aws.main"
-    "aws.cloudfront" = "aws.cloudfront"
+  providers = {
+    aws.main       = aws.main
+    aws.cloudfront = aws.cloudfront
   }
 }
 ----
@@ -419,8 +419,8 @@ module "staging-lambda" {
   bucketKey = "${aws_s3_bucket_object.permissions.key}"
   cookieDomain = "${var.fqdn-staging}"
 
-  providers {
-    "aws" = "aws.cloudfront"
+  providers = {
+    aws = aws.cloudfront
   }
 }
 ----
@@ -444,9 +444,9 @@ module "site-root" {
   lambda_edge_enabled = "true"
   lambda_edge_arn_version = "${module.staging-lambda.arn}:${module.staging-lambda.version}"
 
-  providers {
-    "aws.main"       = "aws.main"
-    "aws.cloudfront" = "aws.cloudfront"
+  providers = {
+    aws.main       = aws.main
+    aws.cloudfront = aws.cloudfront
   }
 
 }
