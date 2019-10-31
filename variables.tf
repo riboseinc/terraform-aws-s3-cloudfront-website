@@ -56,16 +56,10 @@ variable "index_document" {
   default     = "index.html"
 }
 
-variable "error_document" {
-  type        = string
-  description = "HTML to show on 404"
-  default     = "404.html"
-}
-
 variable "error_response_code" {
   type        = string
-  description = "Response code to send on 404"
-  default     = "404"
+  description = "Response code to send on 404. We send 200 because this is a single page application"
+  default     = "200"
 }
 
 variable "tags" {

@@ -51,9 +51,9 @@ resource "aws_cloudfront_distribution" "main" {
 
   custom_error_response {
     error_code            = "404"
-    error_caching_min_ttl = "300"
+    error_caching_min_ttl = "0"
     response_code         = var.error_response_code
-    response_page_path    = "/${var.error_document}"
+    response_page_path    = "/${var.index_document}"
   }
 
   aliases = concat([var.fqdn], var.aliases)
