@@ -6,7 +6,6 @@ resource "aws_s3_bucket" "main" {
 
   website {
     index_document = var.index_document
-    error_document = var.error_document
     routing_rules  = var.routing_rules
   }
 
