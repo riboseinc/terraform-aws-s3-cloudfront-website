@@ -21,6 +21,7 @@ You can literally copy and paste the following example, change the following att
 * `domain`: set to your static website's base domain name (e.g., `xyz.com`)
 * `cf_ipv6_enabled`: default is `true`,
 enable https://aws.amazon.com/about-aws/whats-new/2016/10/ipv6-support-for-cloudfront-waf-and-s3-transfer-acceleration/[CloudFront IPV6] feature.
+* `single_page_application`: default is `false`. If `true`, redirects all `404 errors` to the specified `index_document` variable.
 
 
 [source,hcl]
