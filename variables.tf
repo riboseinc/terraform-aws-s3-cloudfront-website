@@ -68,6 +68,12 @@ variable "error_response_code" {
   default     = "404"
 }
 
+variable "spa_error_response_code" {
+  type        = string
+  description = "Response code to send on 404 for a single page application"
+  default     = "200"
+}
+
 variable "tags" {
   type        = map(string)
   description = "Tags"
@@ -87,5 +93,10 @@ variable "lambda_edge_enabled" {
 
 variable "cf_ipv6_enabled" {
   default = true
+  type = bool
+}
+
+variable "single_page_application" {
+  default = false
   type = bool
 }
