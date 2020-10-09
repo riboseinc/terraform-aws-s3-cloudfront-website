@@ -2,6 +2,14 @@
 # https://github.com/hashicorp/terraform/issues/15974
 #   => we need to duplicate "aws_cloudfront_distribution" to support "lambda@edge" feature
 
+provider "aws" {
+  alias = "main"
+}
+
+provider "aws" {
+  alias = "cloudfront"
+}
+
 resource "aws_cloudfront_distribution" "main" {
   count = var.lambda_edge_enabled ? 0 : 1
 
