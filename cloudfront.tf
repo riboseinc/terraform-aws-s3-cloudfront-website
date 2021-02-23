@@ -89,7 +89,7 @@ resource "aws_cloudfront_distribution" "main" {
   viewer_certificate {
     acm_certificate_arn      = var.ssl_certificate_arn
     ssl_support_method       = "sni-only"
-    minimum_protocol_version = "TLSv1"
+    minimum_protocol_version = "TLSv1.2_2018"
   }
 
   web_acl_id = var.web_acl_id
@@ -119,7 +119,7 @@ resource "aws_cloudfront_distribution" "main-lambda-edge" {
       origin_protocol_policy = "http-only"
       http_port              = "80"
       https_port             = "443"
-      origin_ssl_protocols   = ["TLSv1", "TLSv1.1", "TLSv1.2"]
+      origin_ssl_protocols   = ["TLSv1.2"]
     }
 
     # s3_origin_config is not compatible with S3 website hosting, if this
@@ -189,7 +189,7 @@ resource "aws_cloudfront_distribution" "main-lambda-edge" {
   viewer_certificate {
     acm_certificate_arn      = var.ssl_certificate_arn
     ssl_support_method       = "sni-only"
-    minimum_protocol_version = "TLSv1"
+    minimum_protocol_version = "TLSv1.2_2018"
   }
 
   web_acl_id = var.web_acl_id
