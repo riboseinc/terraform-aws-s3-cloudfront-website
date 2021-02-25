@@ -12,7 +12,11 @@ resource "aws_s3_bucket" "main" {
 
   force_destroy = var.force_destroy
 
-  acceleration_status = var.acceleration_status
+  # Transfer acceleration is not possible right now for hosted sites,
+  # as bucket names cannot contain a dot.
+  # https://docs.aws.amazon.com/AmazonS3/latest/userguide/BucketRestrictions.html
+
+  # acceleration_status = var.acceleration_status
 
   tags = merge(
     var.tags,
