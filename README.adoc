@@ -74,8 +74,6 @@ module "main" {
 
   force_destroy = "true"
 
-  acceleration_status = "Enabled"
-
   # Optional override for PriceClass, defaults to PriceClass_100
   cloudfront_price_class = "PriceClass_200"
 

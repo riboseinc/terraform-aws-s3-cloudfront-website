@@ -11,7 +11,7 @@ variable "aliases" {
 
 variable "acceleration_status" {
   type        = string
-  description = "The acceleration_status argument of the S3 bucket"
+  description = "The acceleration_status argument of the S3 bucket (warning: this is not possible right now for hosted sites, as bucket names cannot contain a dot.)"
   default     = "Suspended"
 }
 
