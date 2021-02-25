@@ -9,6 +9,12 @@ variable "aliases" {
   default     = []
 }
 
+variable "acceleration_status" {
+  type        = string
+  description = "The acceleration_status argument of the S3 bucket"
+  default     = "Suspended"
+}
+
 variable "force_destroy" {
   type        = string
   description = "The force_destroy argument of the S3 bucket"

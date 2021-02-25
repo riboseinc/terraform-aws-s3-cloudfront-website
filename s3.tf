@@ -12,6 +12,8 @@ resource "aws_s3_bucket" "main" {
 
   force_destroy = var.force_destroy
 
+  acceleration_status = var.acceleration_status
+
   tags = merge(
     var.tags,
     {
