@@ -11,7 +11,7 @@ variable "aliases" {
 
 variable "acceleration_status" {
   type = string
-  description = "The acceleration_status argument of the S3 bucket (warning: this is not possible right now for hosted sites, as bucket names cannot contain a dot.)"
+  description = "(Suspended | Enabled)The acceleration_status argument of the S3 bucket (warning: this is not possible right now for hosted sites, as bucket names cannot contain a dot.)"
   default = "Suspended"
 }
 
@@ -86,17 +86,6 @@ variable "tags" {
   default = {}
 }
 
-# value should be  "${lambda.arn}:${lambda.version}"
-//variable "lambda_edge_arn_version" {
-//  default = ""
-//  type = string
-//}
-//
-//variable "lambda_edge_enabled" {
-//  default = false
-//  type = bool
-//}
-
 variable "cf_ipv6_enabled" {
   default = true
   type = bool
@@ -112,6 +101,6 @@ variable "lambda_edges" {
 
   type = list(object({
     event_type = string
-    lambda_arn = string
+    lambda_arn = string #"${lambda.arn}:${lambda.version}"
   }))
 }

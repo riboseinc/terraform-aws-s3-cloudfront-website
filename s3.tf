@@ -16,7 +16,7 @@ resource "aws_s3_bucket" "main" {
   # as bucket names cannot contain a dot.
   # https://docs.aws.amazon.com/AmazonS3/latest/userguide/BucketRestrictions.html
 
-  # acceleration_status = var.acceleration_status
+  acceleration_status = var.acceleration_status
 
   tags = merge(
     var.tags,
