@@ -1,4 +1,6 @@
 resource "aws_cloudfront_distribution" "main" {
+  count = 1
+
   is_ipv6_enabled = var.cf_ipv6_enabled
 
   provider     = aws.cloudfront
