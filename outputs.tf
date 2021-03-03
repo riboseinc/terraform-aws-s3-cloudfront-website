@@ -29,3 +29,6 @@ output "cf_distribution_id" {
   value = aws_cloudfront_distribution.main[0].id
 }
 
+output "s3_acceleration_website_endpoint" {
+  value = var.acceleration_status == "Enabled" ? "${aws_s3_bucket.main.bucket}.s3-accelerate.amazonaws.com" : ""
+}
