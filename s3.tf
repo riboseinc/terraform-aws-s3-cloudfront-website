@@ -1,6 +1,10 @@
+locals {
+  bucketName = replace(var.fqdn, ".", "-")
+}
+
 resource "aws_s3_bucket" "main" {
   provider = aws.main
-  bucket   = var.fqdn
+  bucket   = local.bucketName
   acl      = "private"
   policy   = data.aws_iam_policy_document.bucket_policy.json
 
@@ -37,7 +41,7 @@ data "aws_iam_policy_document" "bucket_policy" {
     ]
 
     resources = [
-      "arn:aws:s3:::${var.fqdn}/*",
+      "arn:aws:s3:::${local.bucketName}/*",
     ]
 
     condition {
@@ -61,7 +65,7 @@ data "aws_iam_policy_document" "bucket_policy" {
     ]
 
     resources = [
-      "arn:aws:s3:::${var.fqdn}/*",
+      "arn:aws:s3:::${local.bucketName}/*",
     ]
 
     condition {

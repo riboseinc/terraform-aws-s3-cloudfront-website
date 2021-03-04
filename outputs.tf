@@ -2,6 +2,10 @@ output "s3_bucket_id" {
   value = aws_s3_bucket.main.id
 }
 
+output "bucketName" {
+  value = local.bucketName
+}
+
 output "s3_bucket_arn" {
   value = aws_s3_bucket.main.arn
 }
