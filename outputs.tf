@@ -3,7 +3,7 @@ output "s3_bucket_id" {
 }
 
 output "bucketName" {
-  value = local.bucketName
+  value = local.localBucketName
 }
 
 output "s3_bucket_arn" {

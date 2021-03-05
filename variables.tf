@@ -3,6 +3,12 @@ variable "fqdn" {
   description = "The FQDN of the website and also name of the S3 bucket"
 }
 
+variable "bucketName" {
+  type = string
+  description = "(var.fqdn is used if value is null) name of the buckets for the site, should not contain Dots(.) if acceleration_status != null"
+  default = null
+}
+
 variable "aliases" {
   type = list(string)
   description = "Any other domain aliases to add to the CloudFront distribution"
@@ -11,8 +17,8 @@ variable "aliases" {
 
 variable "acceleration_status" {
   type = string
-  description = "(Suspended | Enabled)The acceleration_status argument of the S3 bucket (warning: this is not possible right now for hosted sites, as bucket names cannot contain a dot.)"
-  default = "Suspended"
+  description = "(Suspended | Enabled | null) The acceleration_status argument of the S3 bucket (warning: this is not possible right now for hosted sites, as bucket names cannot contain a dot.)"
+  default = null
 }
 
 variable "force_destroy" {
