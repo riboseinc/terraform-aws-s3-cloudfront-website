@@ -3,9 +3,13 @@ variable "fqdn" {
   description = "The FQDN of the website and also name of the S3 bucket"
 }
 
-variable "bucketName" {
+variable "bucket_name" {
   type = string
-  description = "(var.fqdn is used if value is null) name of the buckets for the site, should not contain Dots(.) if acceleration_status != null"
+  description = <<EOF
+    To control name of the bucket of the website, default is "{var.fqdn}"
+    Warning: to use `acceleration_status` mode, the name can not contains Dots(.)
+  EOF
+//  description = "(var.fqdn is used if value is null) name of the buckets for the site, should not contain Dots(.) if acceleration_status != null"
   default = null
 }
 
@@ -17,7 +21,13 @@ variable "aliases" {
 
 variable "acceleration_status" {
   type = string
-  description = "(Suspended | Enabled | null) The acceleration_status argument of the S3 bucket (warning: this is not possible right now for hosted sites, as bucket names cannot contain a dot.)"
+  description = <<EOF
+    Possible values: (Suspended | Enabled | null)
+    The acceleration_status argument of the S3 bucket
+    Warning: current Bucket might be destroyed, as its name cannot contain a dot.
+    Variable `bucket_name` might be used to control this behavior.
+  EOF
+//  description = "(Suspended | Enabled | null) The acceleration_status argument of the S3 bucket (warning: current Bucket might be destroyed, as its name cannot contain a dot)"
   default = null
 }
 

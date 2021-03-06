@@ -1,5 +1,5 @@
 locals {
-  localBucketName = var.bucketName == null ? var.fqdn : var.bucketName
+  localBucketName = var.bucket_name == null ? var.fqdn : var.bucket_name
 }
 
 resource "aws_s3_bucket" "main" {

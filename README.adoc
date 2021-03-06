@@ -442,8 +442,22 @@ module "site-root" {
 
   force_destroy = "true"
 
+  /** v1.0.2-
   lambda_edge_enabled = "true"
   lambda_edge_arn_version = "${module.staging-lambda.arn}:${module.staging-lambda.version}"
+  */
+
+  /** v1.0.3+ */
+  lambda_edges = [
+    {
+      event_type = "viewer-request"
+      lambda_arn = "${module.staging-lambda.arn}:${module.staging-lambda.version}"
+    },
+    {
+      event_type = "viewer-response"
+      lambda_arn = "${module.staging-lambda.arn}:${module.staging-lambda.version}"
+    }
+  ]
 
   providers = {
     aws.main       = aws.main
