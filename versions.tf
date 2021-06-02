@@ -3,7 +3,7 @@ terraform {
   required_providers {
     aws = {
       source = "hashicorp/aws"
-      version = "~> 3.0"
+      version = "~> 2.9"
       configuration_aliases = [aws.main, aws.cloudfront]
     }
   }
