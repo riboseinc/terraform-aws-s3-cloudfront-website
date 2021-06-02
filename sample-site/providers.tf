@@ -1,11 +1,10 @@
 provider "aws" {
   alias = "main"
-  version = "~> 2.9"
+  region = "us-east-1"
 }
 
 provider "aws" {
   alias = "cloudfront"
-  version = "~> 2.9"
+  region = "us-east-1"
 }
-
 
