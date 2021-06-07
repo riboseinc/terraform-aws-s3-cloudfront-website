@@ -1,8 +1,8 @@
 # Terraform module to setup a S3 Website with CloudFront, ACM
 
-Tags:
-- Terraform v15 supported: v2+
-- Terraform v12 supported: v1+
+Terraform version supported:
+- **v15** supported: v2+
+- _v12_ supported: v1+
 
 This module helps you create a S3 website, assuming that:
 
@@ -20,12 +20,12 @@ This module is a pair with
 which handles redirecting of a DNS hostname to a website, using S3,
 CloudFront and ACM.
 
-### Sample Usage
-- Check sample site in folder `sample-site`
+### Sample basic usage
+Check sample site in folder `sample-site`
 
-# Supporting bare domains and redirects
+## Supporting bare domains and redirects
 
-## Domain aliases
+### Domain aliases
 
 Need to support a bare domain, e.g. `example.com`, and a
 `www.example.com`?
@@ -46,7 +46,7 @@ resource "aws_route53_record" "www" {
 aliases             = "www.${var.fqdn}"
 ```
 
-## Redirecting from the bare domain to www (and vice versa)
+### Redirecting from the bare domain to www (and vice versa)
 
 You can use the sister module to this,
 [terraform-aws-s3-cloudfront-redirect](https://github.com/riboseinc/terraform-aws-s3-cloudfront-redirect),
@@ -93,36 +93,41 @@ resource "aws_route53_record" "web-root" {
 }
 
 resource "aws_acm_certificate" "cert-root" {
-  provider          = "aws.cloudfront"
-  domain_name       = "${var.fqdn-root}"
+  provider          = aws.cloudfront
+  domain_name       = var.fqdn-root
   validation_method = "DNS"
 }
 
 resource "aws_route53_record" "cert_validation-root" {
-  provider = "aws.cloudfront"
-  name     = "${aws_acm_certificate.cert-root.domain_validation_options.0.resource_record_name}"
-  type     = "${aws_acm_certificate.cert-root.domain_validation_options.0.resource_record_type}"
-  zone_id  = "${data.aws_route53_zone.main.id}"
-  records  = ["${aws_acm_certificate.cert-root.domain_validation_options.0.resource_record_value}"]
-  ttl      = 60
+  for_each = {
+    for dvo in aws_acm_certificate.cert-root.domain_validation_options : dvo.domain_name => {
+      name = dvo.resource_record_name
+      record = dvo.resource_record_value
+      type = dvo.resource_record_type
+    }
+  }
+
+  provider = aws.cloudfront
+  name = each.value.name
+  records         = [each.value.record]
+  type            = each.value.type
+  zone_id = data.aws_route53_zone.main.id
+  ttl = 60
 }
 
 resource "aws_acm_certificate_validation" "cert-root" {
-  provider                = "aws.cloudfront"
-  certificate_arn         = "${aws_acm_certificate.cert-root.arn}"
-  validation_record_fqdns = ["${aws_route53_record.cert_validation-root.fqdn}"]
+  provider                = aws.cloudfront
+  certificate_arn         = aws_acm_certificate.cert-root.arn
+  validation_record_fqdns = [for record in aws_route53_record.cert_validation-root : record.fqdn]
 }
 ```
 
-# Supporting path redirects
+## Supporting path redirects
 
 The `routing_rules` variable allows setting path redirection rules
-according to [AWS S3 Routing
-Rules](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-websiteconfiguration-routingrules.html).
+according to [AWS S3 Routing Rules](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-websiteconfiguration-routingrules.html).
 
-This variable only accepts JSON input, as described in the [Terraform
-aws_s3_bucket
-page](https://www.terraform.io/docs/providers/aws/r/s3_bucket.html).
+This variable only accepts JSON input, as described in the [Terraform aws_s3_bucket page](https://www.terraform.io/docs/providers/aws/r/s3_bucket.html).
 
 In the following example, the S3 website will redirect paths matching
 prefix `myprefix/` to `https://www.example.com` with the HTTP status
@@ -159,7 +164,7 @@ EOF
 }
 ```
 
-# Supporting HTTP authentication
+## Supporting HTTP authentication
 
 This module supports configuration for HTTP authentication using the
 sister module
@@ -178,17 +183,11 @@ function to the CloudFront@Edge distribution of the static website.
 Specifically, this Lambda function is executed on every access to the
 site to check whether:
 
-1.  the path being access should be protected
-
-2.  if so, authenticate the client:
-
-    1.  if the client was previously authentication (and therefore
-        carries a cookie), allow
-
-    2.  with an HTTP authentication, if it matches the configuration,
-        allow
-
-3.  if the client is allowed, place (or update) the cookie to allow for
+1. the path being access should be protected
+2. if so, authenticate the client:
+  - if the client was previously authentication (and therefore carries a cookie), allow
+  - with an HTTP authentication, if it matches the configuration, allow
+3. if the client is allowed, place (or update) the cookie to allow for
     further access.
 
 This is an example of how to use HTTP authentication with this module.
@@ -203,16 +202,12 @@ $ htpasswd -nbB foobar FooBar#PassW0RD
 foobar:$2y$05$1h9cwwFusLcZCIUpdM7Gke.ei1E2QV6ORH/ZmvbR4h2tDGHb7q8lW
 ```
 
-<div class="note">
-
 This command uses `bcrypt` to store the password hash. While it is the
 best choice out of available `htpasswd` algorithms (MD5, SHA1, crypt),
 remember that by default there is no rate limiting on the Lambda
 function — meaning that someone can brute force the passwords via the
 public interface. (You could use the `reserved_concurrent_executions`
 option to limit Lambda concurrency.)
-
-</div>
 
 Create a configuration JSON file that specifies the paths to protect and
 access credentials:
@@ -234,13 +229,8 @@ access credentials:
 }
 ```
 
-<div class="note">
-
-See
-[terraform-aws-lambda-edge-authentication](https://github.com/riboseinc/terraform-aws-lambda-edge-authentication)
+See [terraform-aws-lambda-edge-authentication](https://github.com/riboseinc/terraform-aws-lambda-edge-authentication)
 on how to create blacklists and whitelists for path patterns.
-
-</div>
 
 Create an S3 bucket and upload the configuration JSON file:
 
@@ -266,17 +256,13 @@ resource "aws_s3_bucket" "permissions" {
 }
 ```
 
-<div class="note">
-
 Be aware that this S3 bucket (and the CloudFront@Edge Lambda function)
 must be in the same region as CloudFront distribution.  
 If you use AWS Certificate Manager (ACM) with CloudFront — you must have
-BOTH the ACM certificate and the CloudFront distribution created in the
-`us-east-1` region.
-(<https://docs.aws.amazon.com/acm/latest/userguide/acm-regions.html>)
-The same goes for the Lambda function and its configuration JSON file.
+BOTH the ACM certificate, and the CloudFront distribution created in the `us-east-1` region.  
+Reference: https://docs.aws.amazon.com/acm/latest/userguide/acm-regions.html
 
-</div>
+The same goes for the Lambda function and its configuration JSON file.
 
 Create the authentication Lambda function. Remember that it must use the
 same provider (same region) as the S3 bucket did.
@@ -346,15 +332,9 @@ To confirm this works:
 
 How awesome is this!
 
-# Upgrading to Terraform 0.12
+# Upgrading to Terraform 0.15
 
-This module now supports Terraform 0.12.
+This module now supports Terraform 0.15.
 
-To upgrade to Terraform 0.12 using this module, do this:
-
-``` bash
-terraform init -upgrade
-terraform 0.12upgrade
-terraform plan
-terraform apply -auto-approve
-```
+To upgrade to Terraform 0.15 using this module, do upgrade step-by-step from v12-v15 as in Terraform document
+https://www.terraform.io/upgrade-guides/0-15.html
