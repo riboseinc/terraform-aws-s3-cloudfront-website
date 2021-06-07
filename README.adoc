@@ -1,5 +1,9 @@
 = Terraform module to setup a S3 Website with CloudFront, ACM
 
+== Tags
+- Terraform v15 supported: v2+
+- Terraform v12 supported: v1+
+
 This module helps you create a S3 website, assuming that:
 
 * it runs HTTPS via Amazon's Certificate Manager ("ACM")
