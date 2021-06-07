@@ -1,0 +1,1 @@
+fqdn = "mysite.booppi.website"
