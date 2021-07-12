@@ -16,6 +16,10 @@ This module is a pair with
 https://github.com/riboseinc/terraform-aws-s3-cloudfront-redirect[terraform-aws-s3-cloudfront-redirect],
 which handles redirecting of a DNS hostname to a website, using S3, CloudFront and ACM.
 
+This module supports Terraform 0.15 and above.
+
+NOTE: See below for instructions to upgrade code from 0.12 to 0.13, and 0.13 to 0.15.
+
 == Sample Usage
 
 You can literally copy and paste the following example, change the following attributes, and you're ready to go:
@@ -100,19 +104,29 @@ resource "aws_acm_certificate" "cert" {
 }
 
 resource "aws_route53_record" "cert_validation" {
-  provider = "aws.cloudfront"
-  name     = "${aws_acm_certificate.cert.domain_validation_options.0.resource_record_name}"
-  type     = "${aws_acm_certificate.cert.domain_validation_options.0.resource_record_type}"
-  zone_id  = "${data.aws_route53_zone.main.id}"
-  records  = ["${aws_acm_certificate.cert.domain_validation_options.0.resource_record_value}"]
-  ttl      = 60
+  provider = aws.cloudfront
+  for_each = {
+    for dvo in aws_acm_certificate.cert.domain_validation_options : dvo.domain_name => {
+      name   = dvo.resource_record_name
+      record = dvo.resource_record_value
+      type   = dvo.resource_record_type
+    }
+  }
+
+  allow_overwrite = true
+  name            = each.value.name
+  records         = [each.value.record]
+  ttl             = 60
+  type            = each.value.type
+  zone_id         = data.aws_route53_zone.main.zone_id
 }
 
 resource "aws_acm_certificate_validation" "cert" {
-  provider                = "aws.cloudfront"
-  certificate_arn         = "${aws_acm_certificate.cert.arn}"
-  validation_record_fqdns = ["${aws_route53_record.cert_validation.fqdn}"]
+  provider                = aws.cloudfront
+  certificate_arn         = aws_acm_certificate.cert.arn
+  validation_record_fqdns = [for record in aws_route53_record.cert_validation : record.fqdn]
 }
+
 
 
 # Route 53 record for the static site
@@ -487,8 +501,138 @@ To confirm this works:
 
 How awesome is this!
 
+== Upgrading instructions
 
-== Upgrading to Terraform 0.12
+NOTE: In this section you need to have https://github.com/tfutils/tfenv[`tfenv`]
+installed.
+
+=== Upgrading from Terraform 0.13/0.14 to 0.15
+
+Remove the version restriction on the module:
+
+[source,hcl]
+----
+module "site-main" {
+  source = "github.com/riboseinc/terraform-aws-s3-cloudfront-website"
+  # ...
+}
+
+module "site-root" {
+  source = "github.com/riboseinc/terraform-aws-s3-cloudfront-redirect"
+  # ...
+}
+----
+
+Then:
+
+[source,sh]
+----
+tfenv use 0.15.4
+terraform init -upgrade
+terraform plan
+----
+
+When upgrading to 0.15.4, you need to update the ACM config from:
+
+Original:
+
+[source,hcl]
+----
+resource "aws_route53_record" "cert_validation" {
+  provider = aws.cloudfront
+  name     = aws_acm_certificate.cert.domain_validation_options[0].resource_record_name
+  type     = aws_acm_certificate.cert.domain_validation_options[0].resource_record_type
+  zone_id  = data.aws_route53_zone.main.id
+  records  = [aws_acm_certificate.cert.domain_validation_options[0].resource_record_value]
+  ttl      = 60
+}
+
+resource "aws_acm_certificate_validation" "cert" {
+  provider                = aws.cloudfront
+  certificate_arn         = aws_acm_certificate.cert.arn
+  validation_record_fqdns = [aws_route53_record.cert_validation.fqdn]
+}
+----
+
+Now:
+
+[source,hcl]
+----
+resource "aws_route53_record" "cert_validation" {
+  provider = aws.cloudfront
+  for_each = {
+    for dvo in aws_acm_certificate.cert.domain_validation_options : dvo.domain_name => {
+      name   = dvo.resource_record_name
+      record = dvo.resource_record_value
+      type   = dvo.resource_record_type
+    }
+  }
+
+  allow_overwrite = true
+  name            = each.value.name
+  records         = [each.value.record]
+  ttl             = 60
+  type            = each.value.type
+  zone_id         = data.aws_route53_zone.main.zone_id
+}
+
+resource "aws_acm_certificate_validation" "cert" {
+  provider                = aws.cloudfront
+  certificate_arn         = aws_acm_certificate.cert.arn
+  validation_record_fqdns = [for record in aws_route53_record.cert_validation : record.fqdn]
+}
+----
+
+
+=== Upgrading from Terraform 0.12 to 0.13
+
+First, link the module to a version that supported 0.13:
+
+[source,hcl]
+----
+module "site-main" {
+  source = "github.com/riboseinc/terraform-aws-s3-cloudfront-website?ref=dd85d7f6218190b5a1a9298af136311c2ef8dd14"
+  # ...
+}
+
+module "site-root" {
+  source = "github.com/riboseinc/terraform-aws-s3-cloudfront-redirect?ref=b4ab4a1ec7f373484074b27c73d93ce4bbe60b14"
+  # ...
+}
+----
+
+Assume you are using Terraform 0.12, update module version and verify that you
+can run Terraform properly:
+
+[source,sh]
+----
+tfenv use 0.12.31
+terraform init -upgrade
+----
+
+If all went well, you can use Terraform 0.13, and upgrade the providers:
+
+[source,sh]
+----
+tfenv use 0.13.7
+terraform 0.13upgrade -yes
+terraform init -upgrade
+terraform state replace-provider -auto-approve registry.terraform.io/-/aws hashicorp/aws
+terraform state replace-provider -auto-approve registry.terraform.io/-/null registry.terraform.io/hashicorp/null
+terraform state replace-provider -auto-approve registry.terraform.io/-/archive registry.terraform.io/hashicorp/archive
+terraform state replace-provider -auto-approve registry.terraform.io/-/local registry.terraform.io/hashicorp/local
+----
+
+Then this will succeed:
+
+[source,sh]
+----
+terraform plan
+terraform apply -auto-approve
+----
+
+
+=== Upgrading to Terraform 0.12
 
 This module now supports Terraform 0.12.
 
