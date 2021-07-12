@@ -37,11 +37,6 @@ resource "aws_s3_bucket" "main" {
   )
 }
 
-resource "aws_kms_key" "mykey" {
-  description             = "This key is used to encrypt bucket objects"
-  deletion_window_in_days = 10
-}
-
 data "aws_iam_policy_document" "bucket_policy" {
   provider = aws.main
 
