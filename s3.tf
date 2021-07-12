@@ -1,6 +1,5 @@
 resource "aws_kms_key" "main-key" {
   description             = "This key is used to encrypt bucket objects"
-  deletion_window_in_days = 10
 }
 
 resource "aws_s3_bucket" "main" {
