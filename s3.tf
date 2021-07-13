@@ -1,8 +1,25 @@
+resource "aws_kms_key" "main-key" {
+  description             = "This key is used to encrypt bucket objects"
+}
+
 resource "aws_s3_bucket" "main" {
   provider = aws.main
   bucket   = var.fqdn
   acl      = "private"
   policy   = data.aws_iam_policy_document.bucket_policy.json
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        kms_master_key_id = aws_kms_key.main-key.arn
+        sse_algorithm     = "aws:kms"
+      }
+    }
+  }
+
+  versioning {
+    enabled = true
+  }
 
   website {
     index_document = var.index_document
