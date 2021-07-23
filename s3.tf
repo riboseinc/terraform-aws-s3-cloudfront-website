@@ -9,6 +9,18 @@ resource "aws_s3_bucket" "main" {
     routing_rules  = var.routing_rules
   }
 
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+
+  versioning {
+    enabled = true
+  }
+
   force_destroy = var.force_destroy
 
   tags = merge(
