@@ -1,1 +1,1 @@
-fqdn = "mysite.booppi.website"
+fqdn = "mysite.kamehameha.site"

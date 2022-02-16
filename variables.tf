@@ -60,10 +60,11 @@ variable "refer_secret" {
   default = "123-VERY-SECRET-123"
 }
 
+# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_website_configuration#routing_rule
 variable "routing_rules" {
-  type = string
+  type = map
   description = "Routing rules for the S3 bucket"
-  default = ""
+  default = {}
 }
 
 variable "cloudfront_price_class" {
