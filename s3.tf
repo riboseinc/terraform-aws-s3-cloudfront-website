@@ -2,10 +2,12 @@ locals {
   localBucketName = var.bucket_name == null ? var.fqdn : var.bucket_name
 }
 
-#resource "aws_s3_bucket_accelerate_configuration" "main" {
-#  bucket = aws_s3_bucket.main.id
-#  status = var.acceleration_status
-#}
+
+resource "aws_s3_bucket_accelerate_configuration" "main" {
+  count = var.acceleration_status != null ? 1 : 0
+  bucket = aws_s3_bucket.main.id
+  status = var.acceleration_status
+}
 
 resource "aws_s3_bucket_policy" "main" {
   bucket = aws_s3_bucket.main.id
