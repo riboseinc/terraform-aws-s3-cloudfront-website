@@ -70,6 +70,8 @@ resource "aws_cloudfront_distribution" "main" {
       }
     }
 
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.main.id
+
     viewer_protocol_policy = "redirect-to-https"
     min_ttl                = 0
     default_ttl            = 300
@@ -99,3 +101,16 @@ resource "aws_cloudfront_distribution" "main" {
 
   web_acl_id = var.web_acl_id
 }
+
+resource "aws_cloudfront_response_headers_policy" "main" {
+  name     = replace("${var.fqdn}-security-headers-policy", ".", "-")
+  provider = aws.cloudfront
+
+  security_headers_config {
+    frame_options {
+      override     = true
+      frame_option = "DENY"
+    }
+  }
+}
+
