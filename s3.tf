@@ -79,10 +79,10 @@ resource "aws_s3_bucket" "main" {
 #  acceleration_status = var.acceleration_status
 
   tags = merge(
-  var.tags,
   {
-    "Name" = var.fqdn
+    "Name" = local.localBucketName
   },
+  var.tags
   )
 }
 
