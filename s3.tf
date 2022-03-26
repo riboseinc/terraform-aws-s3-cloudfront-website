@@ -25,6 +25,21 @@ resource "aws_s3_bucket_website_configuration" "main" {
 #  error_document = var.error_document
 #  routing_rules = var.routing_rules
 
+  routing_rule {
+    condition {
+      http_error_code_returned_equals = ''
+      key_prefix_equals = ''
+    }
+
+    redirect {
+      host_name = ''
+      http_redirect_code = ''
+      protocol = ''
+      replace_key_prefix_with= ''
+      replace_key_with = ''
+    }
+  }
+
   index_document {
     suffix = var.index_document
   }
@@ -78,7 +93,7 @@ data "aws_iam_policy_document" "bucket_policy" {
     sid = "AllowedIPReadAccess"
 
     actions = [
-      "s3:GetObject",
+      "s3:GetObsject",
     ]
 
     resources = [
