@@ -154,7 +154,7 @@ data "aws_iam_policy_document" "bucket_policy" {
     sid = "AllowedIPReadAccess"
 
     actions = [
-      "s3:GetObsject",
+      "s3:GetObject",
     ]
 
     resources = [
