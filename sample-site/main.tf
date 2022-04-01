@@ -12,6 +12,16 @@ module "main" {
 
   force_destroy = "true"
 
+  routing_rule = {
+    condition = {
+      http_error_code_returned_equals = "401"
+    }
+
+    redirect = {
+      host_name = "google.com"
+    }
+  }
+
   providers = {
     aws.cloudfront = aws.cloudfront
     aws.main = aws.main
