@@ -67,11 +67,11 @@ variable "refer_secret" {
 }
 
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_website_configuration#routing_rule
-variable "routing_rules" {
-  type        = map
-  description = "Routing rules for the S3 bucket"
-  default     = {}
-}
+#variable "routing_rules" {
+#  type        = map
+#  description = "Routing rules for the S3 bucket"
+#  default     = {}
+#}
 
 variable "cloudfront_price_class" {
   type        = string
@@ -132,6 +132,23 @@ variable "test_var" {
   type = string
   default = null
 }
+
+// we not support multiple routing_rule
+// accept object with keys defined in https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_website_configuration#routing_rule
+variable "routing_rule" {
+  type = any
+  default = null
+}
+
+
+#variable "load_balancer_origin_groups" {
+#  type = map(object({
+#    origins = set(object({
+#      hostname = string
+#    }))
+#  }))
+#}
+
 
 #"RoutingRules": [
 #  {
