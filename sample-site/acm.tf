@@ -43,7 +43,7 @@ resource "aws_acm_certificate_validation" "cert" {
 
 data "aws_route53_zone" "main" {
   provider     = aws.main
-  name         = "kamehameha.site"
+  name         = "kamehameha2.site"
   private_zone = false
 }
 
